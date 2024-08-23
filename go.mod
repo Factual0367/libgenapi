@@ -1,4 +1,4 @@
-module github.com/onurhanak/libgenAPI-Go
+module github.com/onurhanak/libgenapi
 
 go 1.23.0
 

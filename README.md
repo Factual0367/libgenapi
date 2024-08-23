@@ -4,7 +4,7 @@ Search Library Genesis programmatically using an this Go package. It supports us
 
 ## Install the package
 
-    go get https://github.com/onurhanak/libgenapi
+    go get github.com/onurhanak/libgenapi
 
 ## Example Usage
 

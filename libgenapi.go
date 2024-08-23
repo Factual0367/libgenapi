@@ -59,6 +59,8 @@ func generateDownloadLink(md5, bookID, bookTitle, bookFiletype string) string {
 		newBookID = string(bookID[:2]) + "000"
 	} else if len(bookID) == 6 {
 		newBookID = string(bookID[:3]) + "000"
+	} else if len(bookID) == 7 {
+		newBookID = string(bookID[:4]) + "000"
 	}
 
 	md5 = strings.ToLower(md5)

@@ -1,4 +1,4 @@
-# LibgenAPI-Go
+# LibgenAPI
 
 Search Library Genesis programmatically using an this Go package. It supports using Library Genesis' default, author, and title searches.
 

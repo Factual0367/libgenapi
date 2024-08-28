@@ -48,6 +48,7 @@ func (q *Query) Search() error {
 }
 
 func searchURLHandler(query, queryType string) string {
+	query = strings.ReplaceAll(query, " ", "%20")
 	return fmt.Sprintf("https://libgen.is/search.php?req=%s&column=%s&res=100", query, queryType)
 }
 

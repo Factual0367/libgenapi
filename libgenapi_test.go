@@ -39,7 +39,7 @@ func TestQuerySearch(t *testing.T) {
 	if len(query.Results) == 0 {
 		t.Errorf("Query.Search() returned 0 results; want > 0")
 	} else {
-		book := query.Results[2]
+		book := query.Results[3]
 		fmt.Printf("ID: %s\n", book.ID)
 		fmt.Printf("MD5: %s\n", book.MD5)
 		fmt.Printf("Title: %s\n", book.Title)

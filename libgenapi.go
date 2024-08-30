@@ -108,9 +108,8 @@ func addBookCoverLinks(books []Book) []Book {
 	for i, book := range books {
 		for _, id := range openLibraryIds {
 			if book.ID == id["id"] {
-				if len(id["id"]) > 1 {
+				if id["openlibraryid"] != "" {
 					books[i].CoverLink = fmt.Sprintf("https://covers.openlibrary.org/b/olid/%s-M.jpg", id["openlibraryid"])
-
 				} else {
 					books[i].CoverLink = ""
 				}

@@ -30,7 +30,7 @@ func TestGenerateDownloadLink(t *testing.T) {
 }
 
 func TestQuerySearch(t *testing.T) {
-	query := NewQuery("default", "Marx", 25)
+	query := NewQuery("default", "Marx", 50)
 	err := query.Search()
 	if err != nil {
 		t.Fatalf("Query.Search() error: %v", err)
@@ -39,7 +39,8 @@ func TestQuerySearch(t *testing.T) {
 	if len(query.Results) == 0 {
 		t.Errorf("Query.Search() returned 0 results; want > 0")
 	} else if len(query.Results) != 25 {
-		t.Errorf("len(query.Results) = %d; want %d", len(query.Results), 25)
+		fmt.Println(query.Results)
+		t.Errorf("len(query.Results) = %d; want %d", len(query.Results), 50)
 	} else {
 		book := query.Results[3]
 		fmt.Printf("ID: %s\n", book.ID)

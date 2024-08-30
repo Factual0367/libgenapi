@@ -10,19 +10,19 @@ Search Library Genesis programmatically using an this Go package. It supports us
 
 ### Default Search
   
-    query := libgenapi.NewQuery("default", "libraries")
+    query := libgenapi.NewQuery("default", "libraries", 25) // or 50, 100
     err := query.Search()
     fmt.Println(query.Results)
 
 ### Title Search
 
-    query := libgenapi.NewQuery("title", "archaeology")
+    query := libgenapi.NewQuery("title", "archaeology", 25) // or 50, 100
     err := query.Search()
     fmt.Println(query.Results)
 
 ### Author Search
   
-    query := libgenapi.NewQuery("author", "Foucault")
+    query := libgenapi.NewQuery("author", "Foucault", 25) // or 50, 100
     err := query.Search()
     fmt.Println(query.Results)
 

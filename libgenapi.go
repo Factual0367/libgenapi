@@ -31,18 +31,20 @@ type Query struct {
 	QueryType string
 	Query     string
 	SearchURL string
+	QuerySize int
 	Results   []Book
 }
 
-func NewQuery(queryType, query string) *Query {
+func NewQuery(queryType, query string, querySize int) *Query {
 	return &Query{
 		QueryType: queryType,
 		Query:     query,
+		QuerySize: querySize,
 	}
 }
 
 func (q *Query) Search() error {
-	q.SearchURL = searchURLHandler(q.Query, q.QueryType)
+	q.SearchURL = searchURLHandler(q.Query, q.QueryType, q.QuerySize)
 	results, err := scrapeURL(q.SearchURL)
 	if err != nil {
 		return err
@@ -51,9 +53,9 @@ func (q *Query) Search() error {
 	return nil
 }
 
-func searchURLHandler(query, queryType string) string {
+func searchURLHandler(query, queryType string, querySize int) string {
 	query = strings.ReplaceAll(query, " ", "%20")
-	return fmt.Sprintf("https://libgen.is/search.php?req=%s&column=%s&res=100", query, queryType)
+	return fmt.Sprintf("https://libgen.is/search.php?req=%s&column=%s&res=%d", query, queryType, querySize)
 }
 
 func generateDownloadLink(md5, bookID, bookTitle, bookFiletype string) string {

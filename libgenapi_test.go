@@ -6,11 +6,11 @@ import (
 )
 
 func TestSearchURLHandler(t *testing.T) {
-	query := "Marx"
+	query := "Karl Marx"
 	queryType := "author"
-	expectedURL := "https://libgen.is/search.php?req=Marx&column=author&res=100"
-
-	result := searchURLHandler(query, queryType)
+	querySize := 25
+	expectedURL := "https://libgen.is/search.php?req=Karl%20Marx&column=author&res=25"
+	result := searchURLHandler(query, queryType, querySize)
 	if result != expectedURL {
 		t.Errorf("searchURLHandler() = %v; want %v", result, expectedURL)
 	}
@@ -30,7 +30,7 @@ func TestGenerateDownloadLink(t *testing.T) {
 }
 
 func TestQuerySearch(t *testing.T) {
-	query := NewQuery("default", "Marx")
+	query := NewQuery("default", "Marx", 25)
 	err := query.Search()
 	if err != nil {
 		t.Fatalf("Query.Search() error: %v", err)
@@ -38,6 +38,8 @@ func TestQuerySearch(t *testing.T) {
 
 	if len(query.Results) == 0 {
 		t.Errorf("Query.Search() returned 0 results; want > 0")
+	} else if len(query.Results) != 25 {
+		t.Errorf("len(query.Results) = %d; want %d", len(query.Results), 25)
 	} else {
 		book := query.Results[3]
 		fmt.Printf("ID: %s\n", book.ID)

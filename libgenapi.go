@@ -96,7 +96,7 @@ func getOpenLibraryId(idsJoined string) []map[string]string {
 	return jsonMap
 }
 
-func addBookCoverLooks(books []Book) []Book {
+func addBookCoverLinks(books []Book) []Book {
 
 	ids := make([]string, len(books))
 	for i, book := range books {
@@ -108,7 +108,12 @@ func addBookCoverLooks(books []Book) []Book {
 	for i, book := range books {
 		for _, id := range openLibraryIds {
 			if book.ID == id["id"] {
-				books[i].CoverLink = fmt.Sprintf("https://covers.openlibrary.org/b/olid/%s-M.jpg", id["openlibraryid"])
+				if len(id["id"]) > 1 {
+					books[i].CoverLink = fmt.Sprintf("https://covers.openlibrary.org/b/olid/%s-M.jpg", id["openlibraryid"])
+
+				} else {
+					books[i].CoverLink = ""
+				}
 			}
 		}
 	}
@@ -182,6 +187,6 @@ func scrapeURL(searchURL string) ([]Book, error) {
 		log.Println("Failed to visit target page:", err)
 		return nil, err
 	}
-	books = addBookCoverLooks(books)
+	books = addBookCoverLinks(books)
 	return books, nil
 }

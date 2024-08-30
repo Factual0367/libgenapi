@@ -1,8 +1,11 @@
 package libgenapi
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -21,6 +24,7 @@ type Book struct {
 	Size         string
 	Extension    string
 	DownloadLink string
+	CoverLink    string
 }
 
 type Query struct {
@@ -67,6 +71,49 @@ func generateDownloadLink(md5, bookID, bookTitle, bookFiletype string) string {
 	md5 = strings.ToLower(md5)
 	bookTitle = strings.Replace(bookTitle, " ", "_", -1)
 	return fmt.Sprintf("https://download.library.lol/main/%s/%s/%s.%s", newBookID, md5, bookTitle, bookFiletype)
+}
+
+func getOpenLibraryId(idsJoined string) []map[string]string {
+	url := fmt.Sprintf("https://libgen.is/json.php?ids=%s&fields=id,openlibraryid", idsJoined)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var jsonMap []map[string]string
+
+	err = json.Unmarshal(body, &jsonMap)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return jsonMap
+}
+
+func addBookCoverLooks(books []Book) []Book {
+
+	ids := make([]string, len(books))
+	for i, book := range books {
+		ids[i] = book.ID
+	}
+	idsJoined := strings.Join(ids, ",")
+	openLibraryIds := getOpenLibraryId(idsJoined)
+
+	for i, book := range books {
+		for _, id := range openLibraryIds {
+			if book.ID == id["id"] {
+				books[i].CoverLink = fmt.Sprintf("https://covers.openlibrary.org/b/olid/%s-M.jpg", id["openlibraryid"])
+			}
+		}
+	}
+
+	return books
 }
 
 func scrapeURL(searchURL string) ([]Book, error) {
@@ -135,6 +182,6 @@ func scrapeURL(searchURL string) ([]Book, error) {
 		log.Println("Failed to visit target page:", err)
 		return nil, err
 	}
-
+	books = addBookCoverLooks(books)
 	return books, nil
 }

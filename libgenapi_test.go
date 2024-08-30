@@ -51,5 +51,7 @@ func TestQuerySearch(t *testing.T) {
 		fmt.Printf("Size: %s\n", book.Size)
 		fmt.Printf("Extension: %s\n", book.Extension)
 		fmt.Printf("DownloadLink: %s\n", book.DownloadLink)
+		fmt.Printf("CoverLink: %s\n", book.CoverLink)
+
 	}
 }

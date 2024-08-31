@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -122,6 +123,14 @@ func addBookCoverLinks(books []Book) []Book {
 	return books
 }
 
+func removeISBN(s string) string {
+	re := regexp.MustCompile(`\b\S*\d{4,}\S*\b`)
+	s = re.ReplaceAllString(s, "")
+	s = strings.ReplaceAll(s, ",", "")
+	s = strings.TrimSpace(s)
+	return s
+}
+
 func scrapeURL(searchURL string) ([]Book, error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("libgen.is"),
@@ -146,7 +155,7 @@ func scrapeURL(searchURL string) ([]Book, error) {
 			case 1:
 				book.Author = el.Text
 			case 2:
-				book.Title = el.ChildText("a")
+				book.Title = removeISBN(el.ChildText("a"))
 				md5 := strings.Split(el.ChildAttr("a", "href"), "md5=")
 				if len(md5) == 2 {
 					book.MD5 = md5[1]

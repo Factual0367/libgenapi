@@ -30,7 +30,7 @@ func TestGenerateDownloadLink(t *testing.T) {
 }
 
 func TestQuerySearch(t *testing.T) {
-	query := NewQuery("default", "Marx", 50)
+	query := NewQuery("author", "Marx", 25)
 	err := query.Search()
 	if err != nil {
 		t.Fatalf("Query.Search() error: %v", err)
@@ -38,23 +38,22 @@ func TestQuerySearch(t *testing.T) {
 
 	if len(query.Results) == 0 {
 		t.Errorf("Query.Search() returned 0 results; want > 0")
-	} else if len(query.Results) != 25 {
-		fmt.Println(query.Results)
-		t.Errorf("len(query.Results) = %d; want %d", len(query.Results), 50)
 	} else {
-		book := query.Results[3]
-		fmt.Printf("ID: %s\n", book.ID)
-		fmt.Printf("MD5: %s\n", book.MD5)
-		fmt.Printf("Title: %s\n", book.Title)
-		fmt.Printf("Author: %s\n", book.Author)
-		fmt.Printf("Publisher: %s\n", book.Publisher)
-		fmt.Printf("Year: %s\n", book.Year)
-		fmt.Printf("Language: %s\n", book.Language)
-		fmt.Printf("Pages: %s\n", book.Pages)
-		fmt.Printf("Size: %s\n", book.Size)
-		fmt.Printf("Extension: %s\n", book.Extension)
-		fmt.Printf("DownloadLink: %s\n", book.DownloadLink)
-		fmt.Printf("CoverLink: %s\n", book.CoverLink)
+		book := query.Results[10]
+
+		err = book.AddSecondDownloadLink()
+
+		if err != nil {
+			t.Errorf("AddSecondDownloadLink() error: %v", err)
+		}
+
+		if book.AlternativeDownloadLink == "" {
+			t.Errorf("AlternativeDownloadLink is empty; expected a valid link")
+		} else {
+			fmt.Printf("AlternativeDownloadLink: %s\n", book.AlternativeDownloadLink)
+		}
 
 	}
+	t.Logf("Full book details: %+v\n", query.Results[10])
+
 }

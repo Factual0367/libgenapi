@@ -14,18 +14,63 @@ import (
 )
 
 type Book struct {
-	ID           string
-	MD5          string
-	Title        string
-	Author       string
-	Publisher    string
-	Year         string
-	Language     string
-	Pages        string
-	Size         string
-	Extension    string
-	DownloadLink string
-	CoverLink    string
+	ID                      string
+	MD5                     string
+	Title                   string
+	Author                  string
+	Publisher               string
+	Year                    string
+	Language                string
+	Pages                   string
+	Size                    string
+	Extension               string
+	DownloadLink            string
+	AlternativeDownloadLink string
+	CoverLink               string
+}
+
+func (b *Book) AddSecondDownloadLink() error {
+	// sometimes library.lol is down
+	// this is useful to add libgen.li download links,
+	// but it significantly increases
+	// the response time if added to every book
+	intermediaryDownloadLink := fmt.Sprintf("https://libgen.li/ads.php?md5=%s", strings.ToUpper(b.MD5))
+	alternativeDownloadLink := ""
+
+	c := colly.NewCollector(
+		colly.AllowedDomains("libgen.li"),
+		// delay requests to mimic human browsing behavior
+		colly.Async(true),
+	)
+
+	c.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0")
+		r.Headers.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8\"")
+		r.Headers.Set("Accept-Language", "en-US,en;q=0.5")
+		r.Headers.Set("Referer", "https://libgen.li")
+		r.Headers.Set("DNT", "1")
+		r.Headers.Set("Sec-GPC", "1")
+		r.Headers.Set("Alt-Used", "libgen.li")
+		r.Headers.Set("Connection", "keep-alive")
+	})
+
+	c.OnHTML("a", func(e *colly.HTMLElement) {
+		if strings.Contains(e.Attr("href"), "&key") {
+			alternativeDownloadLink = e.Attr("href")
+		}
+	})
+
+	err := c.Visit(intermediaryDownloadLink)
+	if err != nil {
+		return err
+	}
+
+	c.Wait()
+
+	if alternativeDownloadLink != "" {
+		b.AlternativeDownloadLink = fmt.Sprintf("https://libgen.li/%s", alternativeDownloadLink)
+	}
+	return nil
 }
 
 type Query struct {
@@ -188,6 +233,7 @@ func scrapeURL(searchURL string) ([]Book, error) {
 
 		if isValidBook && book.Title != "" {
 			book.DownloadLink = generateDownloadLink(book.MD5, book.ID, book.Title, book.Extension)
+
 			books = append(books, book)
 		}
 	})

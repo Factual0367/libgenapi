@@ -26,4 +26,9 @@ Search Library Genesis programmatically using an this Go package. It supports us
     err := query.Search()
     fmt.Println(query.Results)
 
+### Add Alternative Download Link to Book
 
+    query := libgenapi.NewQuery("author", "Foucault", 25) // or 50, 100
+    err := query.Search()
+    book := query.Results[10]
+    err := book.AddSecondDownloadLink()

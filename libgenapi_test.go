@@ -29,6 +29,14 @@ func TestGenerateDownloadLink(t *testing.T) {
 	}
 }
 
+func TestQueryEmptySearch(t *testing.T) {
+	query := NewQuery("default", "", 25)
+	err := query.Search()
+	if err != nil {
+		t.Fatalf("Query.Search() error: %v", err)
+	}
+}
+
 func TestQuerySearch(t *testing.T) {
 	query := NewQuery("author", "Marx", 25)
 	err := query.Search()
@@ -42,7 +50,6 @@ func TestQuerySearch(t *testing.T) {
 		book := query.Results[10]
 
 		err = book.AddSecondDownloadLink()
-
 		if err != nil {
 			t.Errorf("AddSecondDownloadLink() error: %v", err)
 		}
@@ -55,5 +62,4 @@ func TestQuerySearch(t *testing.T) {
 
 	}
 	t.Logf("Full book details: %+v\n", query.Results[10])
-
 }

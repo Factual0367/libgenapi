@@ -93,7 +93,8 @@ func (q *Query) Search() error {
 	q.SearchURL = searchURLHandler(q.Query, q.QueryType, q.QuerySize)
 	results, err := scrapeURL(q.SearchURL)
 	if err != nil {
-		return err
+		q.Results = []Book{}
+		return nil
 	}
 	q.Results = results
 	return nil
@@ -125,27 +126,29 @@ func getOpenLibraryId(idsJoined string) []map[string]string {
 	url := fmt.Sprintf("https://libgen.is/json.php?ids=%s&fields=id,openlibraryid", idsJoined)
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Could not get URL", err)
+		return make([]map[string]string, 0)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Could not read response body", err)
+		return make([]map[string]string, 0)
 	}
 
 	var jsonMap []map[string]string
 
 	err = json.Unmarshal(body, &jsonMap)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Could not unmarshal body", err)
+		return make([]map[string]string, 0)
 	}
 
 	return jsonMap
 }
 
 func addBookCoverLinks(books []Book) []Book {
-
 	ids := make([]string, len(books))
 	for i, book := range books {
 		ids[i] = book.ID
